@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Subredes</title>
+    <link rel="stylesheet" href="subred.css">
+</head>
+<body>
+    <div id="app">
+
+        <header>
+            <h1>Calculadora <span> de</span><span> Subredes</span></h1>
+        </header>
+
+        <div id="input-section">
+            <div id="fila-entrada">
+                <input type="text"
+                    id="ip-entrada"
+                    placeholder="Ingrese la dirección IP"
+                    autocomplete="off"
+                    spellcheck="false"
+                    />
+                <span id="slash">/</span>
+                <input type="number"
+                    id="cidr-entrada"
+                    placeholder="CIDR"
+                    min="0"
+                    max="32"
+                    />
+                    <span id="slash">#</span>
+                    <input type="number"
+                        id="num-subredes"
+                        placeholder="Subredes"
+                        min="1"
+                        max="256"
+                    />
+                
+                <button id="btn-calcular">
+                    <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
+                        <rect x="4" y="4" width="24" height="24" rx="3" stroke="#0d0d0d" stroke-width="1.5"/>
+                        <line x1="10" y1="16" x2="22" y2="16" stroke="#0d0d0d" stroke-width="1.5"/>
+                        <line x1="16" y1="10" x2="16" y2="22" stroke="#0d0d0d" stroke-width="1.5"/>
+                    </svg>
+                    Calcular
+                </button>
+            </div>
+            <div id="mensaje-error" class="hidden"></div>
+            <div id="btns-rapidos">
+                <span class="etiqueta-rapida">ejemplos:</span>
+                <button class="btn-rapido" data-ip="192.168.1.0" data-cidr="24">192.168.1.0/24</button>
+                <button class="btn-rapido" data-ip="10.0.0.0"   data-cidr="8" >10.0.0.0/8</button>
+                <button class="btn-rapido" data-ip="172.16.0.0" data-cidr="16">172.16.0.0/16</button>
+                <button class="btn-rapido" data-ip="10.10.0.0"  data-cidr="30">10.10.0.0/30</button>
+            </div>
+        </div>
+
+        <div id="resultados" class="hidden">
+            <div id="tabla-resultados">
+
+                <div class="tarjeta-resultados">
+                    <div class="tarjeta-etiqueta">
+                        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                            <circle cx="16" cy="16" r="10" stroke="#00cfff" stroke-width="1.5"/>
+                            <circle cx="16" cy="16" r="3"  fill="#00cfff"/>
+                        </svg>
+                        Dirección de Red
+                    </div>
+                    <div class="tarjeta-valores" id="resultados-de-red"></div>
+                    <div class="tarjeta-binaria" id="red-binaria"></div>
+                </div>
+
+                <div class="tarjeta-resultados">
+                    <div class="tarjeta-etiqueta">
+                        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="24" height="24" rx="3" stroke="#00ff88" stroke-width="1.5"/>
+                            <line x1="10" y1="16" x2="22" y2="16" stroke="#00ff88" stroke-width="1.5"/>
+                        </svg>
+                        Mascara de Subred
+                    </div>
+                    <div class="tarjeta-valores" id="resultados-de-mascara"></div>
+                    <div class="tarjeta-binaria" id="mascara-binaria"></div>
+                </div>
+
+                <div class="tarjeta-resultados">
+                    <div class="tarjeta-etiqueta">
+                        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="24" height="24" rx="3" stroke="#ffd600" stroke-width="1.5"/>
+                            <line x1="10" y1="16" x2="22" y2="16" stroke="#ffd600" stroke-width="1.5"/>
+                            <line x1="16" y1="10" x2="16" y2="22" stroke="#ffd600" stroke-width="1.5"/>
+                        </svg>
+                        Mascara Comodin
+                    </div>
+                    <div class="tarjeta-valores" id="resultados-de-comodin"></div>
+                    <div class="tarjeta-binaria" id="comodin-binaria"></div>
+                </div>
+
+                <div class="tarjeta-resultados">
+                    <div class="tarjeta-etiqueta">
+                        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                            <path d="M6 28c0-5.52 4.48-10 10-10s10 4.48 10 10" stroke="#ff4f4f" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="16" cy="12" r="6" stroke="#ff4f4f" stroke-width="1.5"/>
+                        </svg>
+                        Difusion
+                    </div>
+                    <div class="tarjeta-valores" id="resultados-de-difusion"></div>
+                    <div class="tarjeta-binaria" id="difusion-binaria"></div>
+                </div>
+
+                <div class="tarjeta-resultados">
+                    <div class="tarjeta-etiqueta">
+                        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                            <line x1="6" y1="10" x2="26" y2="10" stroke="#00ff88" stroke-width="1.5"/>
+                            <line x1="6" y1="22" x2="26" y2="22" stroke="#ff4f4f" stroke-width="1.5"/>
+                            <line x1="6" y1="10" x2="6"  y2="22" stroke="#888"    stroke-width="1"/>
+                            <line x1="26" y1="10" x2="26" y2="22" stroke="#888"   stroke-width="1"/>
+                        </svg>
+                        Rango Utilizable
+                    </div>
+                    <div class="tarjeta-valores" id="resultados-de-rango"></div>
+                    <div class="tarjeta-subred" id="rango-subred"></div>
+                </div>
+
+                <div class="tarjeta-resultados">
+                    <div class="tarjeta-etiqueta">
+                        <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="4" width="11" height="11" rx="2" stroke="#00cfff" stroke-width="1.5"/>
+                            <rect x="17" y="4" width="11" height="11" rx="2" stroke="#ffd600" stroke-width="1.5"/>
+                            <rect x="4" y="17" width="11" height="11" rx="2" stroke="#00cfff" stroke-width="1.5"/>
+                            <rect x="17" y="17" width="11" height="11" rx="2" stroke="#ffd600" stroke-width="1.5"/>
+                        </svg>
+                        Clase y Tipo de Subred
+                    </div>
+                    <div class="tarjeta-valores" id="resultados-de-clase"></div>
+                    <div class="tarjeta-subred" id="tipo-subred"></div>
+                </div>
+
+            </div>
+
+            <div id="seccion-visual">
+                <h3>Distribucion de bits</h3>
+                <div id="binario-visual"></div>
+                <div id="binario-legend">
+                    <span class="leg net">Red</span>
+                    <span class="leg host">Host</span>
+                </div>
+            </div>
+
+            <div id="seccion-visual-rango">
+                <h3>Rango Visible</h3>
+                <div id="recorte-barra-rango">
+                    <div id="barra-de-rango">
+                        <div id="area-de-subred"></div>
+                        <div id="etiquetas-de-rango">
+                            <span id="etiqueta-red"></span>
+                            <span id="etiqueta-primer-host"></span>
+                            <span id="etiqueta-ultimo-host"></span>
+                            <span id="etiqueta-difusion"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="subred.js"></script>
+</body>
+</html>
