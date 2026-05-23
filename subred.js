@@ -96,6 +96,7 @@ function renderizar(r) {
 
   renderizarBits(r.cidr);
   renderizarBarra(r);
+  renderizarSaltoRed(r);
 
   document.getElementById('resultados').classList.remove('hidden');
 }
@@ -134,6 +135,26 @@ function renderizarBarra(r) {
   document.getElementById('etiqueta-difusion').textContent     = r.difusion;
 }
 
+function renderizarSaltoRed(r) {
+  const bloqueIPs = Math.pow(2, 32 - r.cidr);
+  const maskOctetos = enteroAIp(cidrAMascara(r.cidr)).split('.').map(Number);
+  const octetoIndex = r.cidr === 0 ? 0 : Math.floor((r.cidr - 1) / 8);
+  const salto = 256 - maskOctetos[octetoIndex];
+
+  const difInt = ipAEntero(r.difusion);
+  const proximaInt = (difInt + 1) >>> 0;
+  const proximaRed = enteroAIp(proximaInt);
+
+  document.getElementById('valor-salto').textContent = salto + ' direcciones';
+  document.getElementById('desc-salto').textContent = `256 - ${maskOctetos[octetoIndex]} = ${salto}`;
+  const elProx = document.getElementById('valores-proxima-red');
+  if (elProx) elProx.textContent = proximaRed;
+  const elDescProx = document.getElementById('desc-proxima-red');
+  if (elDescProx) elDescProx.textContent = 'dirección de red de la siguiente subred';
+  document.getElementById('valor-bloque-cidr').textContent = '/' + r.cidr;
+  document.getElementById('desc-bloque-cidr').textContent = `${bloqueIPs} IPs por bloque · ${Math.pow(2, r.cidr)} bloques posibles`;
+}
+
 
 const ipEntrada   = document.getElementById('ip-entrada');
 const cidrEntrada = document.getElementById('cidr-entrada');
@@ -148,19 +169,6 @@ function mostrarError(msg) {
 function limpiarError() {
   mensajeError.classList.add('hidden');
 }
-
-function ejecutar() {
-  const ip   = ipEntrada.value.trim();
-  const cidr = cidrEntrada.value.trim();
-
-  const error = validar(ip, cidr);
-  if (error) { mostrarError(error); return; }
-
-  limpiarError();
-  const resultado = calcular(ip, parseInt(cidr));
-  renderizar(resultado);
-}
-
 btnCalcular.addEventListener('click', ejecutar);
 ipEntrada.addEventListener('keydown',   e => { if (e.key === 'Enter') ejecutar(); });
 cidrEntrada.addEventListener('keydown', e => { if (e.key === 'Enter') ejecutar(); });
@@ -192,8 +200,6 @@ function ejecutar() {
   const cant = document.getElementById('num-subredes').value;
   if (cant) dividirSubredes();
 }
-
-document.getElementById('btn-subredes').addEventListener('click', dividirSubredes);
 
 function dividirSubredes() {
   const ip   = ipEntrada.value.trim();
@@ -237,6 +243,7 @@ function dividirSubredes() {
   }
 
   renderizarTablaSubredes(subredes, cant, nuevoCidr);
+  renderizarSaltoRed({ cidr: nuevoCidr, difusion: subredes[0].difusion });
   limpiarError();
 }
 
